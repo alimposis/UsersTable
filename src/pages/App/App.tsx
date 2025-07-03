@@ -33,6 +33,7 @@ function App() {
             setDataSource(newDataSource);
         }
         setStatePopup(false);
+        setStatePopupEditUser(false);
     }, [stateDataSource]);
 
     const deleteUser = useCallback((userKey: IUser) => {
