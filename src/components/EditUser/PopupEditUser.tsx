@@ -1,40 +1,59 @@
 import type { FieldType, IUser } from '../../shared/models/user';
 
-import dayjs from 'dayjs';
-import React, { useCallback } from 'react';
 import { Button, DatePicker, Form, Input, InputNumber, Modal } from 'antd';
 
-interface Popup {
+import dayjs from 'dayjs';
+import React, { useCallback } from 'react';
+
+interface IPopup {
     state: boolean;
     setState: React.Dispatch<React.SetStateAction<boolean>>;
-    stateUsers: IUser[] | null;
+    stateEditUser: IUser | null;
     setStateUsers: React.Dispatch<React.SetStateAction<IUser[] | null>>;
+    setStateEditUser: React.Dispatch<React.SetStateAction<IUser | null>>;
 }
 
-export const PopupAddedNewUser = React.memo(
-    ({ state, setState, stateUsers, setStateUsers }: Popup) => {
+export const PopupEditUser = React.memo(
+    ({ state, setState, stateEditUser, setStateEditUser, setStateUsers }: IPopup) => {
         const handleSubmit = useCallback(
             async (values: { username: string; date: string; number: string }) => {
+                if (!stateEditUser) return;
                 const date = values.date ? dayjs(values.date).format('YYYY-MM-DD') : '';
                 const name = values.username;
                 const number = values.number;
                 const obj: IUser = {
-                    key: `${stateUsers?.length ? stateUsers?.length + 1 : 1}`,
+                    key: stateEditUser.key,
                     date,
                     name,
                     number,
                 };
-                setStateUsers(prev => [...(prev ?? []), obj]);
+                setStateUsers(prev => {
+                    if (!prev) return null;
+                    return prev.map(e => {
+                        if (e.key === stateEditUser.key) {
+                            return {
+                                ...e,
+                                date: obj.date,
+                                name: obj.name,
+                                number: obj.number,
+                            };
+                        }
+                        return e;
+                    });
+                });
+                setStateEditUser(null);
             },
-            [stateUsers, setStateUsers],
+            [stateEditUser, setStateEditUser],
         );
         return (
             <>
                 <Modal
-                    title="Added new user"
+                    title="Edit user"
                     closable={{ 'aria-label': 'Custom Close Button' }}
                     open={state}
-                    onCancel={() => setState(prev => !prev)}
+                    onCancel={() => {
+                        setState(prev => !prev);
+                    }}
                     footer={
                         <>
                             <Form
@@ -57,7 +76,7 @@ export const PopupAddedNewUser = React.memo(
                                 </Form.Item>
                                 <Form.Item label={null}>
                                     <Button type="primary" htmlType="submit">
-                                        Submit
+                                        Edit
                                     </Button>
                                 </Form.Item>
                             </Form>
