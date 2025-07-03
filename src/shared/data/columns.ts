@@ -1,6 +1,9 @@
-import type { IUser } from '../models/user';
+import { Button, Space, Table } from 'antd';
 
-export const columns = [
+import type { IUser } from '../models/user';
+import type { TableColumnsType } from 'antd';
+
+export const columns: TableColumnsType<IUser> = [
     {
         title: 'Name',
         dataIndex: 'name',
@@ -18,10 +21,5 @@ export const columns = [
         dataIndex: 'number',
         key: 'number',
         sorter: (a: IUser, b: IUser) => a.number.localeCompare(b.number),
-    },
-    {
-        title: 'Action',
-        dataIndex: 'action',
-        key: 'action',
     },
 ];
